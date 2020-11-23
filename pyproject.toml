@@ -1,0 +1,48 @@
+[tool.poetry]
+name = "stylegan2"
+version = "0.0.1"
+description = "An implementation of StyleGan2 in JAX"
+authors = ["Daniel Suess <daniel@dsuess.me>"]
+
+[[tool.poetry.source]]
+name = "silverpond"
+url = "https://pypi.silverpond.com.au/simple"
+
+
+[tool.poetry.dependencies]
+python = "^3.6.1"
+dm-haiku = "^0.0.2"
+jax = "^0.2.6"
+jaxlib = { version = "==0.1.57", optional = true }
+
+[tool.poetry.dev-dependencies]
+black = "19.10b0"
+pylint = "^2.6"
+mypy = "^0.782"
+pytest = "^6.0.0"
+isort = "^5.0"
+
+[tool.poetry.extras]
+cpu = ["jaxlib"]
+
+
+[tool.pylint]
+
+[tool.pylint.master]
+unsafe-load-any-extension = ['no']
+
+
+[tool.pytest.ini_options]
+addopts = "--doctest-modules --strict"
+testpaths = ["stylegan2", "tests"]
+
+
+[tool.isort]
+profile = "black"
+line_length = 80
+multi_line_output = 3
+
+
+[build-system]
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"
