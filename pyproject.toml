@@ -30,11 +30,17 @@ cpu = ["jaxlib"]
 
 [tool.pylint.master]
 unsafe-load-any-extension = ['no']
+good-names = ["x"]
 
 
 [tool.pytest.ini_options]
 addopts = "--doctest-modules --strict"
 testpaths = ["stylegan2", "tests"]
+
+[tool.pylint.messages_control]
+disable = [
+    "anomalous-backslash-in-string"
+]
 
 
 [tool.isort]
