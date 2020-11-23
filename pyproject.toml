@@ -39,7 +39,7 @@ testpaths = ["stylegan2", "tests"]
 
 [tool.pylint.messages_control]
 disable = [
-    "anomalous-backslash-in-string"
+    "anomalous-backslash-in-string", "missing-module-docstring"
 ]
 
 
