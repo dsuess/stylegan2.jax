@@ -2,12 +2,10 @@
 [1] T. Karras, S. Laine, and T. Aila, “A Style-Based Generator Architecture
     for Generative Adversarial Networks,” arXiv:1812.04948 [cs, stat],
     Mar. 2019
-
 """
 
 import haiku as hk
 import jax  # pylint: disable=unused-import
-import jax.numpy as jnp
 from jax import nn as jnn
 
 from stylegan2._typing import ActivationFunction
@@ -15,7 +13,15 @@ from stylegan2._typing import ActivationFunction
 from .utils import _init, normalize  # pylint: disable=unused-import
 
 
-class StyleEmbeddingNetwork(hk.Module):
+# pylint: disable=too-many-arguments
+def style_embedding_network(
+    final_embedding_size: int = 512,
+    intermediate_latent_size: int = 512,
+    depth: int = 8,
+    normalize_latents: bool = True,
+    activation_function: ActivationFunction = jnn.leaky_relu,
+    name: str = "style_embedding_network",
+) -> hk.Sequential:
     """Network transforming raw latents `z` into disentangled "style-latents"
     `w`. See Figure 1 b) (left) in [1].
 
@@ -43,49 +49,26 @@ class StyleEmbeddingNetwork(hk.Module):
             https://github.com/NVlabs/stylegan2/blob/master/training/networks_stylegan2.py#L280
 
     >>> module = _init(
-    ...     StyleEmbeddingNetwork,
+    ...     style_embedding_network,
     ...     final_embedding_size=4,
     ...     intermediate_latent_size=2)
-    >>> x = jnp.zeros(8)
+    >>> x = jax.numpy.zeros((4, 8))
     >>> params = module.init(jax.random.PRNGKey(0), x)
     >>> y = module.apply(params, None, x)
     >>> tuple(y.shape)
-    (4,)
+    (4, 4)
     """
+    assert depth > 1
+    layers = []
 
-    # pylint: disable=too-many-arguments
-    def __init__(
-        self,
-        final_embedding_size: int = 512,
-        intermediate_latent_size: int = 512,
-        depth: int = 8,
-        normalize_latents: bool = True,
-        activation_function: ActivationFunction = jnn.leaky_relu,
-        name: str = None,
-    ):
-        assert depth > 1
-        super().__init__(name=name)
+    if normalize_latents:
+        layers += [hk.to_module(normalize)(name="normalize")]
 
-        self.normalize_latents = normalize_latents
-        self.activation_function = activation_function
-        self.layers = [
-            hk.Linear(output_size=intermediate_latent_size) for _ in range(depth - 1)
+    for _ in range(depth - 1):
+        layers += [
+            hk.Linear(output_size=intermediate_latent_size, name="linear"),
+            hk.to_module(activation_function)(name="activation"),
         ]
-        self.layers += [hk.Linear(output_size=final_embedding_size)]
+    layers += [hk.Linear(output_size=final_embedding_size)]
 
-    def __call__(self, x: jnp.ndarray) -> jnp.ndarray:
-        """
-        Args:
-            x (jnp.ndarray): Input latent of size `latent_size`
-
-        Returns:
-            jnp.ndarray: Output latent of size `final_embedding_size`
-
-        """
-        if self.normalize_latents:
-            x = normalize(x)
-
-        for linear in self.layers:
-            x = self.activation_function(linear(x))
-
-        return x
+    return hk.Sequential(layers, name=name)
