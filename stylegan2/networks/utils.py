@@ -1,8 +1,15 @@
+from enum import Enum
 from typing import Any, Callable, Type
 
 import haiku as hk
 import jax
 import jax.numpy as jnp
+
+
+# pylint: disable=missing-class-docstring
+class ChannelOrder(Enum):
+    channels_last = 1
+    channels_first = 2
 
 
 def normalize(x: jnp.ndarray, epsilon: float = 1e-8) -> jnp.ndarray:

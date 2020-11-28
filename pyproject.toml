@@ -21,6 +21,9 @@ pylint = "^2.6"
 mypy = "^0.782"
 pytest = "^6.0.0"
 isort = "^5.0"
+jupyter = "^1.0.0"
+notebook = "^6.1.5"
+pdbpp = "^0.10.2"
 
 [tool.poetry.extras]
 cpu = ["jaxlib"]
@@ -30,7 +33,7 @@ cpu = ["jaxlib"]
 
 [tool.pylint.master]
 unsafe-load-any-extension = ['no']
-good-names = ["x"]
+good-names = ["x", "y"]
 
 
 [tool.pytest.ini_options]
@@ -39,7 +42,8 @@ testpaths = ["stylegan2", "tests"]
 
 [tool.pylint.messages_control]
 disable = [
-    "anomalous-backslash-in-string", "missing-module-docstring"
+    "anomalous-backslash-in-string", "missing-module-docstring",
+    "too-many-locals", "too-many-arguments"
 ]
 
 
