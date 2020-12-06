@@ -11,28 +11,21 @@ from .utils import ChannelOrder, _init  # pylint: disable=unused-import
 
 def _apply_filter_2d(
     x: jnp.ndarray,
-    conv_kernel_shape: Tuple[int, int],
     filter_kernel: jnp.ndarray,
-    downsample_factor: int = 1,
     data_format: ChannelOrder = ChannelOrder.channels_last,
+    padding: Tuple[int, int] = (0, 0),
 ) -> jnp.ndarray:
     """
     >>> x = jnp.zeros((1, 64, 64, 2))
-    >>> conv_kernel_shape = (3, 3)
     >>> kernel = jnp.zeros((4, 4))
-    >>> _apply_filter_2d(x, conv_kernel_shape, kernel, downsample_factor=2).shape
+    >>> _apply_filter_2d(x, kernel, padding=(2, 2)).shape
     (1, 65, 65, 2)
 
     >>> x = jnp.zeros((1, 2, 64, 64))
-    >>> conv_kernel_shape = (3, 3)
     >>> kernel = jnp.zeros((3, 3))
-    >>> _apply_filter_2d(x, conv_kernel_shape, kernel, downsample_factor=2,
-    ...                  data_format=ChannelOrder.channels_first).shape
+    >>> _apply_filter_2d(x, kernel, padding=(2, 1), data_format=ChannelOrder.channels_first).shape
     (1, 2, 65, 65)
     """
-    # pylint: disable=invalid-name
-    kh, kw = filter_kernel.shape
-    ch, cw = conv_kernel_shape
     if data_format == ChannelOrder.channels_first:
         dimension_numbers = ("NCHW", "OIHW", "NCHW")
         filter_kernel = filter_kernel[None, None]
@@ -45,17 +38,11 @@ def _apply_filter_2d(
         x = x[..., None]
         vmap_over_axis = 3
 
-    # See https://github.com/NVlabs/stylegan2-ada/blob/main/dnnlib/tflib/ops/upfirdn_2d.py#L362
-    pad_l = (kw - downsample_factor + cw) // 2
-    pad_r = (kw - downsample_factor + cw - 1) // 2
-    pad_t = (kh - downsample_factor + ch) // 2
-    pad_b = (kh - downsample_factor + ch - 1) // 2
-
     conv_func = ft.partial(
         jax.lax.conv_general_dilated,
         rhs=filter_kernel,
         window_strides=(1, 1),
-        padding=[(pad_t, pad_b), (pad_l, pad_r)],
+        padding=[padding, padding],
         dimension_numbers=dimension_numbers,
     )
     y = jax.vmap(conv_func, in_axes=vmap_over_axis, out_axes=vmap_over_axis)(x)
@@ -109,14 +96,89 @@ class ConvDownsample2D(hk.Module):
         self.data_format = data_format
 
     def __call__(self, x: jnp.ndarray) -> jnp.ndarray:
+        # pylint: disable=invalid-name
+        kh, kw = self.resample_kernel.shape
+        ch, cw = self.conv.kernel_shape
+        assert kh == kw
+        assert ch == cw
+
+        # See https://github.com/NVlabs/stylegan2-ada/blob/main/dnnlib/tflib/ops/upfirdn_2d.py#L362
+        pad_0 = (kw - self.downsample_factor + cw) // 2
+        pad_1 = (kw - self.downsample_factor + cw - 1) // 2
         y = _apply_filter_2d(
             x,
-            self.conv.kernel_shape,
             self.resample_kernel,
-            downsample_factor=self.downsample_factor,
+            padding=(pad_0, pad_1),
             data_format=self.data_format,
         )
         return self.conv(y)
+
+
+class UpsampleConv2D(hk.Module):
+    """This is the `_simple_upfirdn_2d` part of
+    https://github.com/NVlabs/stylegan2-ada/blob/main/dnnlib/tflib/ops/upfirdn_2d.py#L313
+
+    >>> module = _init(
+    ...     UpsampleConv2D,
+    ...     output_channels=8,
+    ...     kernel_shape=3,
+    ...     resample_kernel=jnp.array([1, 3, 3, 1]),
+    ...     upsample_factor=2)
+    >>> x = jax.numpy.zeros((1, 32, 32, 4))
+    >>> latents = jax.numpy.zeros((1, 32))
+    >>> params = module.init(jax.random.PRNGKey(0), x, latents)
+    >>> y = module.apply(params, None, x, latents)
+    >>> tuple(y.shape)
+    (1, 64, 64, 8)
+    """
+
+    def __init__(
+        self,
+        output_channels: int,
+        kernel_shape: Union[int, Tuple[int, int]],
+        resample_kernel: jnp.array,
+        upsample_factor: int = 1,
+        gain: float = 1.0,
+        data_format: ChannelOrder = ChannelOrder.channels_last,
+        name: str = None,
+    ):
+        super().__init__(name=name)
+        if resample_kernel.ndim == 1:
+            resample_kernel = resample_kernel[:, None] * resample_kernel[None, :]
+        elif 0 <= resample_kernel.ndim > 2:
+            raise ValueError(
+                f"Resample kernel has invalid shape {resample_kernel.shape}"
+            )
+
+        self.conv = ModulatedConvTranspose2D(
+            output_channels=output_channels,
+            kernel_shape=kernel_shape,
+            stride=upsample_factor,
+            padding="VALID",
+            data_format=data_format.name,
+        )
+        self.resample_kernel = jnp.array(resample_kernel) * gain / resample_kernel.sum()
+        self.upsample_factor = upsample_factor
+        self.data_format = data_format
+
+    def __call__(self, x: jnp.ndarray, latents: jnp.ndarray) -> jnp.ndarray:
+        # pylint: disable=invalid-name
+        kh, kw = self.resample_kernel.shape
+        ch, cw = self.conv.kernel_shape
+        assert kh == kw
+        assert ch == cw
+
+        # See https://github.com/NVlabs/stylegan2-ada/blob/main/dnnlib/tflib/ops/upfirdn_2d.py#L306
+        pad_0 = (kw + self.upsample_factor - cw) // 2
+        pad_1 = (kw - self.upsample_factor - cw + 3) // 2
+        y = self.conv(x, latents)
+        y = _apply_filter_2d(
+            y,
+            self.resample_kernel,
+            padding=(pad_0, pad_1),
+            data_format=self.data_format,
+        )
+        return y
 
 
 def mod_demod_conv(
