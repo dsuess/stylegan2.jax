@@ -9,6 +9,7 @@ from math import log2, sqrt
 from typing import List, Tuple, Union
 
 import haiku as hk
+import jax
 import jax.nn as jnn
 import jax.numpy as jnp
 

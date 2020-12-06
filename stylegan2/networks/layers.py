@@ -1,8 +1,9 @@
 import functools as ft
-from typing import Tuple, Union
+from typing import Optional, Sequence, Tuple, Union
 
 import haiku as hk
 import jax
+import numpy as np
 from jax import numpy as jnp
 
 from .utils import ChannelOrder, _init  # pylint: disable=unused-import
@@ -116,3 +117,165 @@ class ConvDownsample2D(hk.Module):
             data_format=self.data_format,
         )
         return self.conv(y)
+
+
+def mod_demod_conv(
+    inputs: jnp.ndarray,
+    styles: jnp.ndarray,
+    orig_weight: jnp.ndarray,
+    channel_index: int,
+    demodulate: bool = True,
+    **kwargs,
+):
+    assert styles.ndim == 1
+    num_spatial = orig_weight.ndim - 2
+    if channel_index == -1:
+        new_shape = (1,) * num_spatial + (styles.size, 1)
+        # Compute normalization over all axes except for output-channel
+        reduce_axes = tuple(range(num_spatial + 1))
+    else:
+        new_shape = (styles.size, 1) + (1,) * num_spatial
+        reduce_axes = (0,) + tuple(range(2, 2 + num_spatial))
+
+    # Apply styles over input-channel dimension of weights
+    weight = orig_weight * styles.reshape(new_shape)
+
+    if demodulate:
+        norm = jax.lax.square(weight).sum(axis=reduce_axes, keepdims=True)
+        weight = weight * jax.lax.rsqrt(norm + 1e-8)
+
+    inputs = jnp.expand_dims(inputs, axis=0)
+    (result,) = jax.lax.conv_general_dilated(inputs, weight, **kwargs)
+    return result
+
+
+class ModulatedConv(hk.ConvND):
+    def __init__(self, *args, demodulate: bool = True, **kwargs):
+
+        super().__init__(*args, **kwargs)
+        self.demodulate = demodulate
+
+    def __call__(self, inputs: jnp.ndarray, latents: jnp.ndarray) -> jnp.ndarray:
+        """Connects ``ConvND`` layer.
+        Args:
+        inputs: An array of shape ``[spatial_dims, C]`` and rank-N+1 if unbatched,
+            or an array of shape ``[N, spatial_dims, C]`` and rank-N+2 if batched.
+        Returns:
+        An array of shape ``[spatial_dims, output_channels]`` and rank-N+1 if
+            unbatched, or an array of shape ``[N, spatial_dims, output_channels]``
+            and rank-N+2 if batched.
+        """
+        unbatched_rank = self.num_spatial_dims + 1
+        allowed_ranks = [unbatched_rank, unbatched_rank + 1]
+        if inputs.ndim not in allowed_ranks:
+            raise ValueError(
+                f"Input to ConvND needs to have rank in {allowed_ranks},"
+                f" but input has shape {inputs.shape}."
+            )
+
+        unbatched = inputs.ndim == unbatched_rank
+        if unbatched:
+            inputs = jnp.expand_dims(inputs, axis=0)
+            latents = jnp.expand_dims(latents, axis=0)
+        assert latents.ndim == 2
+
+        w_shape = self.kernel_shape + (
+            inputs.shape[self.channel_index],
+            self.output_channels,
+        )
+
+        if self.mask is not None and self.mask.shape != w_shape:
+            raise ValueError(
+                "Mask needs to have the same shape as weights. "
+                f"Shapes are: {self.mask.shape}, {w_shape}"
+            )
+
+        w_init = self.w_init
+        if w_init is None:
+            fan_in_shape = np.prod(w_shape[:-1])
+            stddev = 1.0 / np.sqrt(fan_in_shape)
+            w_init = hk.initializers.TruncatedNormal(stddev=stddev)
+        w = hk.get_parameter("w", w_shape, inputs.dtype, init=w_init)
+
+        conv_fn = ft.partial(
+            mod_demod_conv,
+            orig_weight=w,
+            channel_index=self.channel_index,
+            demodulate=self.demodulate,
+            window_strides=self.stride,
+            padding=self.padding,
+            lhs_dilation=self.lhs_dilation,
+            rhs_dilation=self.kernel_dilation,
+            dimension_numbers=self.dimension_numbers,
+        )
+        # Modulate; +1 do have default bias be == 1
+        styles = hk.Linear(inputs.shape[self.channel_index])(latents) + 1
+        out = jax.vmap(conv_fn)(inputs, styles)
+
+        if self.mask is not None:
+            w *= self.mask
+
+        if self.with_bias:
+            if self.channel_index == -1:
+                bias_shape = (self.output_channels,)
+            else:
+                bias_shape = (self.output_channels,) + (1,) * self.num_spatial_dims
+            b = hk.get_parameter("b", bias_shape, inputs.dtype, init=self.b_init)
+            b = jnp.broadcast_to(b, out.shape)
+            out = out + b
+
+        if unbatched:
+            out = jnp.squeeze(out, axis=0)
+        return out
+
+
+class ModulatedConv2D(ModulatedConv):
+    """[summary]
+    >>> module = _init(
+    ...     ModulatedConv2D,
+    ...     output_channels=8,
+    ...     kernel_shape=3,
+    ...     padding="SAME")
+    >>> x = jax.numpy.zeros((3, 16, 16, 4))
+    >>> latents = jax.numpy.zeros((3, 16))
+    >>> params = module.init(jax.random.PRNGKey(0), x, latents)
+    >>> y = module.apply(params, None, x, latents)
+    >>> tuple(y.shape)
+    (3, 16, 16, 8)
+
+    Args:
+        ModulatedConv ([type]): [description]
+    """
+
+    def __init__(
+        self,
+        output_channels: int,
+        kernel_shape: Union[int, Sequence[int]],
+        stride: Union[int, Sequence[int]] = 1,
+        rate: Union[int, Sequence[int]] = 1,
+        padding: Union[
+            str, Sequence[Tuple[int, int]], hk.pad.PadFn, Sequence[hk.pad.PadFn]
+        ] = "SAME",
+        with_bias: bool = True,
+        w_init: hk.initializers.Initializer = None,
+        b_init: hk.initializers.Initializer = None,
+        data_format: str = "NHWC",
+        mask: jnp.ndarray = None,
+        demodulate: bool = True,
+        name: str = None,
+    ):
+        super().__init__(
+            num_spatial_dims=2,
+            output_channels=output_channels,
+            kernel_shape=kernel_shape,
+            stride=stride,
+            rate=rate,
+            padding=padding,
+            with_bias=with_bias,
+            w_init=w_init,
+            b_init=b_init,
+            data_format=data_format,
+            mask=mask,
+            name=name,
+            demodulate=demodulate,
+        )
