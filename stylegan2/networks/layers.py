@@ -1,5 +1,5 @@
 import functools as ft
-from typing import Optional, Sequence, Tuple, Union
+from typing import Any, Optional, Sequence, Tuple, Union
 
 import haiku as hk
 import jax
@@ -181,6 +181,73 @@ class UpsampleConv2D(hk.Module):
         return y
 
 
+class Upsample2D(hk.Module):
+    """This is the `_simple_upfirdn_2d` part of
+    https://github.com/NVlabs/stylegan2-ada/blob/main/dnnlib/tflib/ops/upfirdn_2d.py#L313
+
+    >>> module = _init(
+    ...     Upsample2D,
+    ...     resample_kernel=jnp.array([1, 3, 3, 1]),
+    ...     upsample_factor=2)
+    >>> x = jax.numpy.zeros((1, 32, 32, 4))
+    >>> params = module.init(jax.random.PRNGKey(0), x)
+    >>> y = module.apply(params, None, x)
+    >>> tuple(y.shape)
+    (1, 64, 64, 4)
+    """
+
+    def __init__(
+        self,
+        resample_kernel: jnp.array,
+        upsample_factor: int = 1,
+        gain: float = 1.0,
+        data_format: ChannelOrder = ChannelOrder.channels_last,
+        name: str = None,
+    ):
+        super().__init__(name=name)
+        if resample_kernel.ndim == 1:
+            resample_kernel = resample_kernel[:, None] * resample_kernel[None, :]
+        elif 0 <= resample_kernel.ndim > 2:
+            raise ValueError(
+                f"Resample kernel has invalid shape {resample_kernel.shape}"
+            )
+        self.resample_kernel = jnp.array(resample_kernel) * gain / resample_kernel.sum()
+        self.upsample_factor = upsample_factor
+        self.data_format = data_format
+
+    def __call__(self, x: jnp.ndarray) -> jnp.ndarray:
+        # pylint: disable=invalid-name
+        kh, kw = self.resample_kernel.shape
+        assert kh == kw
+
+        # Upsample by inserting zeros
+        up = self.upsample_factor
+        offset = self.data_format == ChannelOrder.channels_first
+        y = jnp.expand_dims(x, axis=(2 + offset, 4 + offset))
+        padding = [(0, 0)] * (2 + offset)
+        padding += [(0, up - 1), (0, 0), (0, up - 1)]
+        padding += [(0, 0)] * (1 - offset)
+
+        if self.data_format == ChannelOrder.channels_first:
+            new_shape = (x.shape[0], x.shape[1], up * x.shape[2], up * x.shape[3])
+        else:
+            new_shape = (x.shape[0], up * x.shape[1], up * x.shape[2], x.shape[3])
+        y = jnp.reshape(jnp.pad(y, padding), new_shape)
+
+        # See https://github.com/NVlabs/stylegan2-ada/blob/main/dnnlib/tflib/ops/upfirdn_2d.py#L306
+        pad_0 = (kw + self.upsample_factor - 1) // 2
+        pad_1 = (kw - self.upsample_factor) // 2
+        assert pad_0 >= 0
+        assert pad_1 >= 0
+        y = _apply_filter_2d(
+            y,
+            self.resample_kernel,
+            padding=(pad_0, pad_1),
+            data_format=self.data_format,
+        )
+        return y
+
+
 def mod_demod_conv(
     inputs: jnp.ndarray,
     styles: jnp.ndarray,
@@ -301,8 +368,8 @@ class ModulatedConv2D(ModulatedConv):
         ModulatedConv ([type]): [description]
     """
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs, num_spatial_dims=2)
+    def __init__(self, *args: Any, **kwargs: Any):
+        super().__init__(2, *args, **kwargs)
 
 
 def mod_demod_conv_transpose(
@@ -421,4 +488,4 @@ class ModulatedConvTranspose2D(ModulatedConvTranpose):
     """
 
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs, num_spatial_dims=2)
+        super().__init__(2, *args, **kwargs)
