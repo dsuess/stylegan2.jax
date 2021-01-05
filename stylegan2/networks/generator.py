@@ -63,7 +63,7 @@ class SkipGenerator(hk.Module):
         self.data_format = data_format
         self.resample_kernel = jnp.array([1, 3, 3, 1])
 
-    def get_initial_features(self) -> jnp.ndarray:
+    def get_initial_features(self, key) -> jnp.ndarray:
         """
         >>> func = hk.transform(lambda: SkipGenerator(
         ...     image_size=(64, 128),
@@ -81,7 +81,7 @@ class SkipGenerator(hk.Module):
         else:
             shape = (*const_size, num_features)
 
-        return hk.get_parameter("const", shape, init=hk.initializers.RandomNormal())
+        return jax.random.normal(key, shape)
 
     def layer(
         self,
@@ -133,10 +133,10 @@ class SkipGenerator(hk.Module):
         return y
 
     def __call__(self, latents: jnp.ndarray) -> jnp.ndarray:
-        const = self.get_initial_features()
+        key = hk.next_rng_key()
+        const = self.get_initial_features(key)
         # TODO Express using vmap
         const = jnp.tile(const[None], reps=(latents.shape[0], 1, 1, 1))
-        key = hk.next_rng_key()
         # 1st axis ... which block latent is used in
         # 2nd axis ... whether latent is used in layer or in ToRGB
         latents = jnp.reshape(

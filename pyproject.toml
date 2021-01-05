@@ -14,6 +14,9 @@ python = "^3.6.1"
 dm-haiku = "^0.0.2"
 jax = "^0.2.6"
 jaxlib = { version = "==0.1.57", optional = true }
+tensorflow-datasets = "^4.1.0"
+tensorflow = "^2.4.0"
+optax = "^0.0.2"
 
 [tool.poetry.dev-dependencies]
 black = "19.10b0"

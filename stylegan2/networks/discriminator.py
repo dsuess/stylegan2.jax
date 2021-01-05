@@ -46,6 +46,9 @@ def minibatch_stddev_layer(
     >>> y = minibatch_stddev_layer(x, num_new_features=4, data_format=ChannelOrder.channels_first)
     >>> y.shape
     (4, 12, 23, 26)
+
+    FIXME Rewrite using allreduce ops like psum to allow non-batched definition
+          of networks
     """
     # pylint: disable=invalid-name
     if data_format == ChannelOrder.channels_last:
