@@ -10,7 +10,11 @@ from stylegan2._typing import ActivationFunction
 
 from .discriminator import _get_num_features
 from .layers import ModulatedConv2D, Upsample2D, UpsampleConv2D
-from .utils import ChannelOrder, _init  # pylint: disable=unused-import
+from .utils import (  # pylint: disable=unused-import
+    ChannelOrder,
+    _init,
+    _module_grad,
+)
 
 
 class SkipGenerator(hk.Module):
@@ -29,10 +33,14 @@ class SkipGenerator(hk.Module):
 
     >>> module = _init(SkipGenerator, image_size=64, max_hidden_feature_size=16)
     >>> latents = jnp.zeros((1, 10, 512))
-    >>> params = module.init(jax.random.PRNGKey(0), latents)
-    >>> y = module.apply(params, jax.random.PRNGKey(0), latents)
+    >>> key = jax.random.PRNGKey(0)
+    >>> params = module.init(key, latents)
+    >>> y = module.apply(params, key, latents)
     >>> y.shape
     (1, 64, 64, 3)
+    >>> grad = _module_grad(module, params, key, latents)
+    >>> set(grad) == set(params)
+    True
     """
 
     def __init__(
@@ -65,11 +73,12 @@ class SkipGenerator(hk.Module):
 
     def get_initial_features(self, key) -> jnp.ndarray:
         """
+        >>> key = jax.random.PRNGKey(0)
         >>> func = hk.transform(lambda: SkipGenerator(
         ...     image_size=(64, 128),
-        ...     max_hidden_feature_size=16).get_initial_features())
-        >>> params = func.init(jax.random.PRNGKey(0))
-        >>> x = func.apply(params, jax.random.PRNGKey(0))
+        ...     max_hidden_feature_size=16).get_initial_features(key))
+        >>> params = func.init(key)
+        >>> x = func.apply(params, key)
         >>> tuple(x.shape)
         (4, 8, 16)
         """

@@ -30,3 +30,8 @@ def _init(module: Type[hk.Module], *args: Any, **kwargs: Any) -> Callable:
 
     wrapped: Callable = hk.transform(run)
     return wrapped
+
+
+def _module_grad(module: hk.Module, *args: Any, **kwargs: Any):
+    grad_f = jax.grad(lambda *args, **kwargs: jnp.sum(module.apply(*args)))
+    return grad_f(*args, **kwargs)

@@ -10,7 +10,11 @@ from jax import nn as jnn
 
 from stylegan2._typing import ActivationFunction
 
-from .utils import _init, normalize  # pylint: disable=unused-import
+from .utils import (  # pylint: disable=unused-import
+    _init,
+    _module_grad,
+    normalize,
+)
 
 
 # pylint: disable=too-many-arguments
@@ -57,6 +61,9 @@ def style_embedding_network(
     >>> y = module.apply(params, None, x)
     >>> tuple(y.shape)
     (4, 4)
+    >>> grad = _module_grad(module, params, None, x)
+    >>> set(grad) == set(params)
+    True
     """
     assert depth > 1
     layers = []

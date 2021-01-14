@@ -16,7 +16,11 @@ import jax.numpy as jnp
 from stylegan2._typing import ActivationFunction
 
 from .layers import ConvDownsample2D
-from .utils import ChannelOrder, _init  # pylint: disable=unused-import
+from .utils import (  # pylint: disable=unused-import
+    ChannelOrder,
+    _init,
+    _module_grad,
+)
 
 
 def minibatch_stddev_layer(
@@ -184,6 +188,9 @@ class ResidualDiscriminator(hk.Module):
     >>> y = module.apply(params, None, x)
     >>> y.shape
     (2, 1)
+    >>> grad = _module_grad(module, params, None, x)
+    >>> set(grad) == set(params)
+    True
 
     TODO:
         - add Attention similar to https://github.com/lucidrains/stylegan2-pytorch/blob/54c79f430d0da3b02f570c6e1ef74d09190cd311/stylegan2_pytorch/stylegan2_pytorch.py#L557
