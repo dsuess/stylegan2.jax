@@ -590,7 +590,7 @@ reference = "silverpond"
 
 [[package]]
 name = "importlib-metadata"
-version = "3.3.0"
+version = "3.4.0"
 description = "Read metadata from Python packages"
 category = "main"
 optional = false
@@ -601,8 +601,8 @@ typing-extensions = {version = ">=3.6.4", markers = "python_version < \"3.8\""}
 zipp = ">=0.5"
 
 [package.extras]
-docs = ["sphinx", "jaraco.packaging (>=3.2)", "rst.linker (>=1.9)"]
-testing = ["pytest (>=3.5,!=3.7.3)", "pytest-checkdocs (>=1.2.3)", "pytest-flake8", "pytest-cov", "jaraco.test (>=3.2.0)", "packaging", "pep517", "pyfakefs", "flufl.flake8", "pytest-black (>=0.3.7)", "pytest-mypy", "importlib-resources (>=1.3)"]
+docs = ["sphinx", "jaraco.packaging (>=8.2)", "rst.linker (>=1.9)"]
+testing = ["pytest (>=3.5,!=3.7.3)", "pytest-checkdocs (>=1.2.3)", "pytest-flake8", "pytest-cov", "pytest-enabler", "packaging", "pep517", "pyfakefs", "flufl.flake8", "pytest-black (>=0.3.7)", "pytest-mypy", "importlib-resources (>=1.3)"]
 
 [package.source]
 type = "legacy"
@@ -611,7 +611,7 @@ reference = "silverpond"
 
 [[package]]
 name = "importlib-resources"
-version = "4.1.1"
+version = "5.0.0"
 description = "Read resources from Python packages"
 category = "main"
 optional = false
@@ -621,8 +621,8 @@ python-versions = ">=3.6"
 zipp = {version = ">=0.4", markers = "python_version < \"3.8\""}
 
 [package.extras]
-docs = ["sphinx", "jaraco.packaging (>=3.2)", "rst.linker (>=1.9)"]
-testing = ["pytest (>=3.5,!=3.7.3)", "pytest-checkdocs (>=1.2.3)", "pytest-flake8", "pytest-cov", "jaraco.test (>=3.2.0)", "pytest-black (>=0.3.7)", "pytest-mypy"]
+docs = ["sphinx", "jaraco.packaging (>=8.2)", "rst.linker (>=1.9)"]
+testing = ["pytest (>=3.5,!=3.7.3)", "pytest-checkdocs (>=1.2.3)", "pytest-flake8", "pytest-cov", "pytest-enabler", "pytest-black (>=0.3.7)", "pytest-mypy"]
 
 [package.source]
 type = "legacy"
@@ -644,7 +644,7 @@ reference = "silverpond"
 
 [[package]]
 name = "ipykernel"
-version = "5.4.2"
+version = "5.4.3"
 description = "IPython Kernel for Jupyter"
 category = "dev"
 optional = false
@@ -658,7 +658,7 @@ tornado = ">=4.2"
 traitlets = ">=4.1.0"
 
 [package.extras]
-test = ["pytest (!=5.3.4)", "pytest-cov", "flaky", "nose"]
+test = ["pytest (!=5.3.4)", "pytest-cov", "flaky", "nose", "jedi (<=0.17.2)"]
 
 [package.source]
 type = "legacy"
@@ -715,30 +715,6 @@ url = "https://pypi.silverpond.com.au/simple"
 reference = "silverpond"
 
 [[package]]
-name = "ipywidgets"
-version = "7.6.2"
-description = "IPython HTML widgets for Jupyter"
-category = "dev"
-optional = false
-python-versions = "*"
-
-[package.dependencies]
-ipykernel = ">=4.5.1"
-ipython = {version = ">=4.0.0", markers = "python_version >= \"3.3\""}
-jupyterlab-widgets = {version = ">=1.0.0", markers = "python_version >= \"3.5\""}
-nbformat = ">=4.2.0"
-traitlets = ">=4.3.1"
-widgetsnbextension = ">=3.5.0,<3.6.0"
-
-[package.extras]
-test = ["pytest (>=3.6.0)", "pytest-cov", "mock"]
-
-[package.source]
-type = "legacy"
-url = "https://pypi.silverpond.com.au/simple"
-reference = "silverpond"
-
-[[package]]
 name = "isort"
 version = "5.7.0"
 description = "A Python utility / library to sort Python imports."
@@ -758,7 +734,7 @@ reference = "silverpond"
 
 [[package]]
 name = "jax"
-version = "0.2.7"
+version = "0.2.8"
 description = "Differentiate, compile, and transform Numpy code."
 category = "main"
 optional = false
@@ -795,18 +771,18 @@ reference = "silverpond"
 
 [[package]]
 name = "jedi"
-version = "0.18.0"
+version = "0.17.2"
 description = "An autocompletion tool for Python that can be used for text editors."
 category = "dev"
 optional = false
-python-versions = ">=3.6"
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
 
 [package.dependencies]
-parso = ">=0.8.0,<0.9.0"
+parso = ">=0.7.0,<0.8.0"
 
 [package.extras]
-qa = ["flake8 (==3.8.3)", "mypy (==0.782)"]
-testing = ["Django (<3.1)", "colorama", "docopt", "pytest (<6.0.0)"]
+qa = ["flake8 (==3.7.9)"]
+testing = ["Django (<3.1)", "colorama", "docopt", "pytest (>=3.9.0,<5.0.0)"]
 
 [package.source]
 type = "legacy"
@@ -856,29 +832,8 @@ url = "https://pypi.silverpond.com.au/simple"
 reference = "silverpond"
 
 [[package]]
-name = "jupyter"
-version = "1.0.0"
-description = "Jupyter metapackage. Install all the Jupyter components in one go."
-category = "dev"
-optional = false
-python-versions = "*"
-
-[package.dependencies]
-ipykernel = "*"
-ipywidgets = "*"
-jupyter-console = "*"
-nbconvert = "*"
-notebook = "*"
-qtconsole = "*"
-
-[package.source]
-type = "legacy"
-url = "https://pypi.silverpond.com.au/simple"
-reference = "silverpond"
-
-[[package]]
 name = "jupyter-client"
-version = "6.1.7"
+version = "6.1.11"
 description = "Jupyter protocol implementation and client libraries"
 category = "dev"
 optional = false
@@ -892,30 +847,8 @@ tornado = ">=4.1"
 traitlets = "*"
 
 [package.extras]
-test = ["ipykernel", "ipython", "mock", "pytest", "pytest-asyncio", "async-generator", "pytest-timeout"]
-
-[package.source]
-type = "legacy"
-url = "https://pypi.silverpond.com.au/simple"
-reference = "silverpond"
-
-[[package]]
-name = "jupyter-console"
-version = "6.2.0"
-description = "Jupyter terminal console"
-category = "dev"
-optional = false
-python-versions = ">=3.6"
-
-[package.dependencies]
-ipykernel = "*"
-ipython = "*"
-jupyter-client = "*"
-prompt-toolkit = ">=2.0.0,<3.0.0 || >3.0.0,<3.0.1 || >3.0.1,<3.1.0"
-pygments = "*"
-
-[package.extras]
-test = ["pexpect"]
+doc = ["sphinx (>=1.3.6)", "sphinx-rtd-theme", "sphinxcontrib-github-alt"]
+test = ["jedi (<=0.17.2)", "ipykernel", "ipython", "mock", "pytest", "pytest-asyncio", "async-generator", "pytest-timeout"]
 
 [package.source]
 type = "legacy"
@@ -949,19 +882,6 @@ python-versions = "*"
 
 [package.dependencies]
 pygments = ">=2.4.1,<3"
-
-[package.source]
-type = "legacy"
-url = "https://pypi.silverpond.com.au/simple"
-reference = "silverpond"
-
-[[package]]
-name = "jupyterlab-widgets"
-version = "1.0.0"
-description = "A JupyterLab extension."
-category = "dev"
-optional = false
-python-versions = ">=3.6"
 
 [package.source]
 type = "legacy"
@@ -1157,7 +1077,7 @@ reference = "silverpond"
 
 [[package]]
 name = "nbformat"
-version = "5.0.8"
+version = "5.1.0"
 description = "The Jupyter Notebook format"
 category = "dev"
 optional = false
@@ -1171,7 +1091,7 @@ traitlets = ">=4.1"
 
 [package.extras]
 fast = ["fastjsonschema"]
-test = ["fastjsonschema", "testpath", "pytest", "pytest-cov"]
+test = ["check-manifest", "fastjsonschema", "testpath", "pytest", "pytest-cov"]
 
 [package.source]
 type = "legacy"
@@ -1193,7 +1113,7 @@ reference = "silverpond"
 
 [[package]]
 name = "notebook"
-version = "6.1.6"
+version = "6.2.0"
 description = "A web-based notebook environment for interactive computing"
 category = "dev"
 optional = false
@@ -1210,9 +1130,9 @@ nbconvert = "*"
 nbformat = "*"
 prometheus-client = "*"
 pyzmq = ">=17"
-Send2Trash = "*"
+Send2Trash = ">=1.5.0"
 terminado = ">=0.8.3"
-tornado = ">=5.0"
+tornado = ">=6.1"
 traitlets = ">=4.2.1"
 
 [package.extras]
@@ -1327,15 +1247,14 @@ reference = "silverpond"
 
 [[package]]
 name = "parso"
-version = "0.8.1"
+version = "0.7.1"
 description = "A Python Parser"
 category = "dev"
 optional = false
-python-versions = ">=3.6"
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 
 [package.extras]
-qa = ["flake8 (==3.8.3)", "mypy (==0.782)"]
-testing = ["docopt", "pytest (<6.0.0)"]
+testing = ["docopt", "pytest (>=3.0.7)"]
 
 [package.source]
 type = "legacy"
@@ -1462,7 +1381,7 @@ reference = "silverpond"
 
 [[package]]
 name = "prompt-toolkit"
-version = "3.0.8"
+version = "3.0.10"
 description = "Library for building powerful interactive command lines in Python"
 category = "dev"
 optional = false
@@ -1562,7 +1481,7 @@ reference = "silverpond"
 
 [[package]]
 name = "pygments"
-version = "2.7.3"
+version = "2.7.4"
 description = "Pygments is a syntax highlighting package written in Python."
 category = "dev"
 optional = false
@@ -1732,46 +1651,6 @@ url = "https://pypi.silverpond.com.au/simple"
 reference = "silverpond"
 
 [[package]]
-name = "qtconsole"
-version = "5.0.1"
-description = "Jupyter Qt console"
-category = "dev"
-optional = false
-python-versions = ">= 3.6"
-
-[package.dependencies]
-ipykernel = ">=4.1"
-ipython-genutils = "*"
-jupyter-client = ">=4.1"
-jupyter-core = "*"
-pygments = "*"
-pyzmq = ">=17.1"
-qtpy = "*"
-traitlets = "*"
-
-[package.extras]
-doc = ["Sphinx (>=1.3)"]
-test = ["flaky", "pytest", "pytest-qt"]
-
-[package.source]
-type = "legacy"
-url = "https://pypi.silverpond.com.au/simple"
-reference = "silverpond"
-
-[[package]]
-name = "qtpy"
-version = "1.9.0"
-description = "Provides an abstraction layer on top of the various Qt bindings (PyQt5, PyQt4 and PySide) and additional custom QWidgets."
-category = "dev"
-optional = false
-python-versions = "*"
-
-[package.source]
-type = "legacy"
-url = "https://pypi.silverpond.com.au/simple"
-reference = "silverpond"
-
-[[package]]
 name = "regex"
 version = "2020.11.13"
 description = "Alternative regular expression module, to replace re."
@@ -1829,7 +1708,7 @@ reference = "silverpond"
 
 [[package]]
 name = "rsa"
-version = "4.6"
+version = "4.7"
 description = "Pure-Python RSA implementation"
 category = "main"
 optional = false
@@ -1955,7 +1834,7 @@ reference = "silverpond"
 
 [[package]]
 name = "tensorflow-datasets"
-version = "4.1.0"
+version = "4.2.0"
 description = "tensorflow/datasets is a library of datasets ready to use with TensorFlow."
 category = "main"
 optional = false
@@ -1970,7 +1849,7 @@ future = "*"
 importlib-resources = {version = "*", markers = "python_version < \"3.9\""}
 numpy = "*"
 promise = "*"
-protobuf = ">=3.6.1"
+protobuf = ">=3.12.2"
 requests = ">=2.19.0"
 six = "*"
 tensorflow-metadata = "*"
@@ -1984,7 +1863,7 @@ c4 = ["apache-beam", "gcld3", "langdetect", "nltk", "tldextract"]
 cats_vs_dogs = ["matplotlib"]
 colorectal_histology = ["pillow"]
 common_voice = ["pydub"]
-dev = ["jupyter", "mako", "pytest", "pytest-xdist", "pandas", "pydub", "apache-beam", "fastavro (==1.0.0)", "pylint (>=2.6.0)", "yapf", "tensorflow-data-validation"]
+dev = ["jupyter", "pytest", "pytest-xdist", "pandas", "pydub", "apache-beam", "pyyaml", "pylint (>=2.6.0)", "yapf", "tensorflow-data-validation"]
 duke_ultrasound = ["scipy"]
 eurosat = ["scikit-image", "tifffile", "imagecodecs"]
 groove = ["pretty-midi", "pydub"]
@@ -1998,10 +1877,11 @@ robonet = ["h5py"]
 svhn = ["scipy"]
 tensorflow = ["tensorflow (>=2.1)"]
 tensorflow-data-validation = ["tensorflow-data-validation"]
-tests-all = ["jupyter", "mako", "pytest", "pytest-xdist", "pandas", "pydub", "apache-beam", "fastavro (==1.0.0)", "scipy", "gcld3", "langdetect", "nltk", "tldextract", "matplotlib", "pillow", "scikit-image", "tifffile", "imagecodecs", "pretty-midi", "opencv-python", "h5py", "mwparserfromhell", "tensorflow-data-validation"]
+tests-all = ["jupyter", "pytest", "pytest-xdist", "pandas", "pydub", "apache-beam", "pyyaml", "scipy", "gcld3", "langdetect", "nltk", "tldextract", "matplotlib", "pillow", "scikit-image", "tifffile", "imagecodecs", "pretty-midi", "opencv-python", "h5py", "mwparserfromhell", "bs4", "lxml", "tensorflow-data-validation"]
 the300w_lp = ["scipy"]
 wider_face = ["pillow"]
 wikipedia = ["mwparserfromhell", "apache-beam"]
+wsc273 = ["bs4", "lxml"]
 
 [package.source]
 type = "legacy"
@@ -2053,7 +1933,7 @@ reference = "silverpond"
 
 [[package]]
 name = "terminado"
-version = "0.9.1"
+version = "0.9.2"
 description = "Tornado websocket backend for the Xterm.js Javascript terminal emulator library."
 category = "dev"
 optional = false
@@ -2126,7 +2006,7 @@ reference = "silverpond"
 
 [[package]]
 name = "tqdm"
-version = "4.55.1"
+version = "4.56.0"
 description = "Fast, Extensible Progress Meter"
 category = "main"
 optional = false
@@ -2250,22 +2130,6 @@ url = "https://pypi.silverpond.com.au/simple"
 reference = "silverpond"
 
 [[package]]
-name = "widgetsnbextension"
-version = "3.5.1"
-description = "IPython HTML widgets for Jupyter"
-category = "dev"
-optional = false
-python-versions = "*"
-
-[package.dependencies]
-notebook = ">=4.4.1"
-
-[package.source]
-type = "legacy"
-url = "https://pypi.silverpond.com.au/simple"
-reference = "silverpond"
-
-[[package]]
 name = "wmctrl"
 version = "0.3"
 description = "A tool to programmatically control windows inside X"
@@ -2314,7 +2178,7 @@ cpu = ["jaxlib"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.6.1"
-content-hash = "3bb4411bc6510b49f33901cf82b1e482398722016ace3df4d89305f92c9bd0e1"
+content-hash = "d0d6a552c7df33dcf0d24b41fc0550ad56f86bfe70387711c2eb1ecbacf78801"
 
 [metadata.files]
 absl-py = [
@@ -2592,20 +2456,20 @@ idna = [
     {file = "idna-2.10.tar.gz", hash = "sha256:b307872f855b18632ce0c21c5e45be78c0ea7ae4c15c828c20788b26921eb3f6"},
 ]
 importlib-metadata = [
-    {file = "importlib_metadata-3.3.0-py3-none-any.whl", hash = "sha256:bf792d480abbd5eda85794e4afb09dd538393f7d6e6ffef6e9f03d2014cf9450"},
-    {file = "importlib_metadata-3.3.0.tar.gz", hash = "sha256:5c5a2720817414a6c41f0a49993908068243ae02c1635a228126519b509c8aed"},
+    {file = "importlib_metadata-3.4.0-py3-none-any.whl", hash = "sha256:ace61d5fc652dc280e7b6b4ff732a9c2d40db2c0f92bc6cb74e07b73d53a1771"},
+    {file = "importlib_metadata-3.4.0.tar.gz", hash = "sha256:fa5daa4477a7414ae34e95942e4dd07f62adf589143c875c133c1e53c4eff38d"},
 ]
 importlib-resources = [
-    {file = "importlib_resources-4.1.1-py3-none-any.whl", hash = "sha256:0a948d0c8c3f9344de62997e3f73444dbba233b1eaf24352933c2d264b9e4182"},
-    {file = "importlib_resources-4.1.1.tar.gz", hash = "sha256:6b45007a479c4ec21165ae3ffbe37faf35404e2041fac6ae1da684f38530ca73"},
+    {file = "importlib_resources-5.0.0-py3-none-any.whl", hash = "sha256:ea17df80a0ff04b5dbd3d96dbeab1842acfd1c6c902eaeb8c8858abf2720161e"},
+    {file = "importlib_resources-5.0.0.tar.gz", hash = "sha256:4743f090ed8946e713745ec0e660249ef9fb0b9843eacc5b5ff931d2fd5aa67f"},
 ]
 iniconfig = [
     {file = "iniconfig-1.1.1-py2.py3-none-any.whl", hash = "sha256:011e24c64b7f47f6ebd835bb12a743f2fbe9a26d4cecaa7f53bc4f35ee9da8b3"},
     {file = "iniconfig-1.1.1.tar.gz", hash = "sha256:bc3af051d7d14b2ee5ef9969666def0cd1a000e121eaea580d4a313df4b37f32"},
 ]
 ipykernel = [
-    {file = "ipykernel-5.4.2-py3-none-any.whl", hash = "sha256:63b4b96c513e1138874934e3e783a8e5e13c02b9036e37107bfe042ac8955005"},
-    {file = "ipykernel-5.4.2.tar.gz", hash = "sha256:e20ceb7e52cb4d250452e1230be76e0b2323f33bd46c6b2bc7abb6601740e182"},
+    {file = "ipykernel-5.4.3-py3-none-any.whl", hash = "sha256:4ed205700001a83b5832d4821c46a5733f1bf4b1c55744314ae3c756be6b6095"},
+    {file = "ipykernel-5.4.3.tar.gz", hash = "sha256:697103d218e9a8828025af7986e033c89e0b36e2b6eb84a5bda4739b9a27f3cb"},
 ]
 ipython = [
     {file = "ipython-7.16.1-py3-none-any.whl", hash = "sha256:2dbcc8c27ca7d3cfe4fcdff7f45b27f9a8d3edfa70ff8024a71c7a8eb5f09d64"},
@@ -2615,16 +2479,12 @@ ipython-genutils = [
     {file = "ipython_genutils-0.2.0-py2.py3-none-any.whl", hash = "sha256:72dd37233799e619666c9f639a9da83c34013a73e8bbc79a7a6348d93c61fab8"},
     {file = "ipython_genutils-0.2.0.tar.gz", hash = "sha256:eb2e116e75ecef9d4d228fdc66af54269afa26ab4463042e33785b887c628ba8"},
 ]
-ipywidgets = [
-    {file = "ipywidgets-7.6.2-py2.py3-none-any.whl", hash = "sha256:eab960f737f380075cabca41f92e5e81dfb6eba3ce6392094469ef2418ca4d35"},
-    {file = "ipywidgets-7.6.2.tar.gz", hash = "sha256:bbb881ce18fb0cff4ac718f40c04709c7ac86a77abee149f1b447965ede86e36"},
-]
 isort = [
     {file = "isort-5.7.0-py3-none-any.whl", hash = "sha256:fff4f0c04e1825522ce6949973e83110a6e907750cd92d128b0d14aaaadbffdc"},
     {file = "isort-5.7.0.tar.gz", hash = "sha256:c729845434366216d320e936b8ad6f9d681aab72dc7cbc2d51bedc3582f3ad1e"},
 ]
 jax = [
-    {file = "jax-0.2.7.tar.gz", hash = "sha256:51f55ddab1518a52f43131dabb8f5ffc3e68b5f536b945e8cb8fca7c0d3d4b23"},
+    {file = "jax-0.2.8.tar.gz", hash = "sha256:3801a189f38430cc6bbeba6dbea7ac91df5ceab655f7b3243df8c1077f7fb767"},
 ]
 jaxlib = [
     {file = "jaxlib-0.1.57-cp36-none-macosx_10_9_x86_64.whl", hash = "sha256:47d4bf94f38ab9a437a69c19be6a3e1d235811d6da70922a3ff6502c33361504"},
@@ -2637,8 +2497,8 @@ jaxlib = [
     {file = "jaxlib-0.1.57-cp39-none-manylinux2010_x86_64.whl", hash = "sha256:2c07605172118ab3a5a62d639a62059e4c8d67cc44de655af6606c50afa1d8c9"},
 ]
 jedi = [
-    {file = "jedi-0.18.0-py2.py3-none-any.whl", hash = "sha256:18456d83f65f400ab0c2d3319e48520420ef43b23a086fdc05dff34132f0fb93"},
-    {file = "jedi-0.18.0.tar.gz", hash = "sha256:92550a404bad8afed881a137ec9a461fed49eca661414be45059329614ed0707"},
+    {file = "jedi-0.17.2-py2.py3-none-any.whl", hash = "sha256:98cc583fa0f2f8304968199b01b6b4b94f469a1f4a74c1560506ca2a211378b5"},
+    {file = "jedi-0.17.2.tar.gz", hash = "sha256:86ed7d9b750603e4ba582ea8edc678657fb4007894a12bcf6f4bb97892f31d20"},
 ]
 jinja2 = [
     {file = "Jinja2-2.11.2-py2.py3-none-any.whl", hash = "sha256:f0a4641d3cf955324a89c04f3d94663aa4d638abe8f733ecd3582848e1c37035"},
@@ -2648,18 +2508,9 @@ jsonschema = [
     {file = "jsonschema-3.2.0-py2.py3-none-any.whl", hash = "sha256:4e5b3cf8216f577bee9ce139cbe72eca3ea4f292ec60928ff24758ce626cd163"},
     {file = "jsonschema-3.2.0.tar.gz", hash = "sha256:c8a85b28d377cc7737e46e2d9f2b4f44ee3c0e1deac6bf46ddefc7187d30797a"},
 ]
-jupyter = [
-    {file = "jupyter-1.0.0-py2.py3-none-any.whl", hash = "sha256:5b290f93b98ffbc21c0c7e749f054b3267782166d72fa5e3ed1ed4eaf34a2b78"},
-    {file = "jupyter-1.0.0.tar.gz", hash = "sha256:d9dc4b3318f310e34c82951ea5d6683f67bed7def4b259fafbfe4f1beb1d8e5f"},
-    {file = "jupyter-1.0.0.zip", hash = "sha256:3e1f86076bbb7c8c207829390305a2b1fe836d471ed54be66a3b8c41e7f46cc7"},
-]
 jupyter-client = [
-    {file = "jupyter_client-6.1.7-py3-none-any.whl", hash = "sha256:c958d24d6eacb975c1acebb68ac9077da61b5f5c040f22f6849928ad7393b950"},
-    {file = "jupyter_client-6.1.7.tar.gz", hash = "sha256:49e390b36fe4b4226724704ea28d9fb903f1a3601b6882ce3105221cd09377a1"},
-]
-jupyter-console = [
-    {file = "jupyter_console-6.2.0-py3-none-any.whl", hash = "sha256:1d80c06b2d85bfb10bd5cc731b3db18e9023bc81ab00491d3ac31f206490aee3"},
-    {file = "jupyter_console-6.2.0.tar.gz", hash = "sha256:7f6194f4f4692d292da3f501c7f343ccd5e36c6a1becf7b7515e23e66d6bf1e9"},
+    {file = "jupyter_client-6.1.11-py3-none-any.whl", hash = "sha256:5eaaa41df449167ebba5e1cf6ca9b31f7fd4f71625069836e2e4fee07fe3cb13"},
+    {file = "jupyter_client-6.1.11.tar.gz", hash = "sha256:649ca3aca1e28f27d73ef15868a7c7f10d6e70f761514582accec3ca6bb13085"},
 ]
 jupyter-core = [
     {file = "jupyter_core-4.7.0-py3-none-any.whl", hash = "sha256:0a451c9b295e4db772bdd8d06f2f1eb31caeec0e81fbb77ba37d4a3024e3b315"},
@@ -2668,10 +2519,6 @@ jupyter-core = [
 jupyterlab-pygments = [
     {file = "jupyterlab_pygments-0.1.2-py2.py3-none-any.whl", hash = "sha256:abfb880fd1561987efaefcb2d2ac75145d2a5d0139b1876d5be806e32f630008"},
     {file = "jupyterlab_pygments-0.1.2.tar.gz", hash = "sha256:cfcda0873626150932f438eccf0f8bf22bfa92345b814890ab360d666b254146"},
-]
-jupyterlab-widgets = [
-    {file = "jupyterlab_widgets-1.0.0-py3-none-any.whl", hash = "sha256:caeaf3e6103180e654e7d8d2b81b7d645e59e432487c1d35a41d6d3ee56b3fef"},
-    {file = "jupyterlab_widgets-1.0.0.tar.gz", hash = "sha256:5c1a29a84d3069208cb506b10609175b249b6486d6b1cbae8fcde2a11584fb78"},
 ]
 keras-preprocessing = [
     {file = "Keras_Preprocessing-1.1.2-py2.py3-none-any.whl", hash = "sha256:7b82029b130ff61cc99b55f3bd27427df4838576838c5b2f65940e4fcec99a7b"},
@@ -2776,16 +2623,16 @@ nbconvert = [
     {file = "nbconvert-6.0.7.tar.gz", hash = "sha256:cbbc13a86dfbd4d1b5dee106539de0795b4db156c894c2c5dc382062bbc29002"},
 ]
 nbformat = [
-    {file = "nbformat-5.0.8-py3-none-any.whl", hash = "sha256:aa9450c16d29286dc69b92ea4913c1bffe86488f90184445996ccc03a2f60382"},
-    {file = "nbformat-5.0.8.tar.gz", hash = "sha256:f545b22138865bfbcc6b1ffe89ed5a2b8e2dc5d4fe876f2ca60d8e6f702a30f8"},
+    {file = "nbformat-5.1.0-py3-none-any.whl", hash = "sha256:96fb98e9a31480fd457e13b4d9681f4bd429642eb02bc2b3a62b86ae6ee3cf8e"},
+    {file = "nbformat-5.1.0.tar.gz", hash = "sha256:693616f25534a61fa3e02223073a88bc422eb0badbaf0b9f03c7b9764fceb4b9"},
 ]
 nest-asyncio = [
     {file = "nest_asyncio-1.4.3-py3-none-any.whl", hash = "sha256:dbe032f3e9ff7f120e76be22bf6e7958e867aed1743e6894b8a9585fe8495cc9"},
     {file = "nest_asyncio-1.4.3.tar.gz", hash = "sha256:eaa09ef1353ebefae19162ad423eef7a12166bcc63866f8bff8f3635353cd9fa"},
 ]
 notebook = [
-    {file = "notebook-6.1.6-py3-none-any.whl", hash = "sha256:e6a62188e319a5d45dd2ed24719f646adf88bef8be1f654ebd0ab360ece6d7a6"},
-    {file = "notebook-6.1.6.tar.gz", hash = "sha256:cf40d4f81541401db5a2fda1707ca7877157abd41f04ef7b88f02b67f3c61791"},
+    {file = "notebook-6.2.0-py3-none-any.whl", hash = "sha256:25ad93c982b623441b491e693ef400598d1a46cdf11b8c9c0b3be6c61ebbb6cd"},
+    {file = "notebook-6.2.0.tar.gz", hash = "sha256:0464b28e18e7a06cec37e6177546c2322739be07962dd13bf712bcb88361f013"},
 ]
 numpy = [
     {file = "numpy-1.19.4-cp36-cp36m-macosx_10_9_x86_64.whl", hash = "sha256:e9b30d4bd69498fc0c3fe9db5f62fffbb06b8eb9321f92cc970f2969be5e3949"},
@@ -2843,8 +2690,8 @@ pandocfilters = [
     {file = "pandocfilters-1.4.3.tar.gz", hash = "sha256:bc63fbb50534b4b1f8ebe1860889289e8af94a23bff7445259592df25a3906eb"},
 ]
 parso = [
-    {file = "parso-0.8.1-py2.py3-none-any.whl", hash = "sha256:15b00182f472319383252c18d5913b69269590616c947747bc50bf4ac768f410"},
-    {file = "parso-0.8.1.tar.gz", hash = "sha256:8519430ad07087d4c997fda3a7918f7cfa27cb58972a8c89c2a0295a1c940e9e"},
+    {file = "parso-0.7.1-py2.py3-none-any.whl", hash = "sha256:97218d9159b2520ff45eb78028ba8b50d2bc61dcc062a9682666f2dc4bd331ea"},
+    {file = "parso-0.7.1.tar.gz", hash = "sha256:caba44724b994a8a5e086460bb212abc5a8bc46951bf4a9a1210745953622eb9"},
 ]
 pathspec = [
     {file = "pathspec-0.8.1-py2.py3-none-any.whl", hash = "sha256:aa0cb481c4041bf52ffa7b0d8fa6cd3e88a2ca4879c533c9153882ee2556790d"},
@@ -2873,8 +2720,8 @@ promise = [
     {file = "promise-2.3.tar.gz", hash = "sha256:dfd18337c523ba4b6a58801c164c1904a9d4d1b1747c7d5dbf45b693a49d93d0"},
 ]
 prompt-toolkit = [
-    {file = "prompt_toolkit-3.0.8-py3-none-any.whl", hash = "sha256:7debb9a521e0b1ee7d2fe96ee4bd60ef03c6492784de0547337ca4433e46aa63"},
-    {file = "prompt_toolkit-3.0.8.tar.gz", hash = "sha256:25c95d2ac813909f813c93fde734b6e44406d1477a9faef7c915ff37d39c0a8c"},
+    {file = "prompt_toolkit-3.0.10-py3-none-any.whl", hash = "sha256:ac329c69bd8564cb491940511957312c7b8959bb5b3cf3582b406068a51d5bb7"},
+    {file = "prompt_toolkit-3.0.10.tar.gz", hash = "sha256:b8b3d0bde65da350290c46a8f54f336b3cbf5464a4ac11239668d986852e79d5"},
 ]
 protobuf = [
     {file = "protobuf-3.14.0-cp27-cp27m-macosx_10_9_x86_64.whl", hash = "sha256:629b03fd3caae7f815b0c66b41273f6b1900a579e2ccb41ef4493a4f5fb84f3a"},
@@ -2917,8 +2764,8 @@ pycparser = [
     {file = "pycparser-2.20.tar.gz", hash = "sha256:2d475327684562c3a96cc71adf7dc8c4f0565175cf86b6d7a404ff4c771f15f0"},
 ]
 pygments = [
-    {file = "Pygments-2.7.3-py3-none-any.whl", hash = "sha256:f275b6c0909e5dafd2d6269a656aa90fa58ebf4a74f8fcf9053195d226b24a08"},
-    {file = "Pygments-2.7.3.tar.gz", hash = "sha256:ccf3acacf3782cbed4a989426012f1c535c9a90d3a7fc3f16d231b9372d2b716"},
+    {file = "Pygments-2.7.4-py3-none-any.whl", hash = "sha256:bc9591213a8f0e0ca1a5e68a479b4887fdc3e75d0774e5c71c31920c427de435"},
+    {file = "Pygments-2.7.4.tar.gz", hash = "sha256:df49d09b498e83c1a73128295860250b0b7edd4c723a32e9bc0d295c7c2ec337"},
 ]
 pylint = [
     {file = "pylint-2.6.0-py3-none-any.whl", hash = "sha256:bfe68f020f8a0fece830a22dd4d5dddb4ecc6137db04face4c3420a46a52239f"},
@@ -2998,14 +2845,6 @@ pyzmq = [
     {file = "pyzmq-20.0.0-pp36-pypy36_pp73-macosx_10_9_x86_64.whl", hash = "sha256:4d9259a5eb3f71abbaf61f165cacf42240bfeea3783bebd8255341abdfe206f1"},
     {file = "pyzmq-20.0.0.tar.gz", hash = "sha256:824ad5888331aadeac772bce27e1c2fbcab82fade92edbd234542c4e12f0dca9"},
 ]
-qtconsole = [
-    {file = "qtconsole-5.0.1-py3-none-any.whl", hash = "sha256:4d70967aeb62a5bd13a109d61b169a3cf844afc24a35c11f5518574bb8abe670"},
-    {file = "qtconsole-5.0.1.tar.gz", hash = "sha256:4d7dd4eae8a90d0b2b19b31794b30f137238463998989734a3acb8a53b506bab"},
-]
-qtpy = [
-    {file = "QtPy-1.9.0-py2.py3-none-any.whl", hash = "sha256:fa0b8363b363e89b2a6f49eddc162a04c0699ae95e109a6be3bb145a913190ea"},
-    {file = "QtPy-1.9.0.tar.gz", hash = "sha256:2db72c44b55d0fe1407be8fba35c838ad0d6d3bb81f23007886dc1fc0f459c8d"},
-]
 regex = [
     {file = "regex-2020.11.13-cp36-cp36m-macosx_10_9_x86_64.whl", hash = "sha256:8b882a78c320478b12ff024e81dc7d43c1462aa4a3341c754ee65d857a521f85"},
     {file = "regex-2020.11.13-cp36-cp36m-manylinux1_i686.whl", hash = "sha256:a63f1a07932c9686d2d416fb295ec2c01ab246e89b4d58e5fa468089cab44b70"},
@@ -3058,8 +2897,8 @@ requests-oauthlib = [
     {file = "requests_oauthlib-1.3.0-py2.py3-none-any.whl", hash = "sha256:7f71572defaecd16372f9006f33c2ec8c077c3cfa6f5911a9a90202beb513f3d"},
 ]
 rsa = [
-    {file = "rsa-4.6-py3-none-any.whl", hash = "sha256:6166864e23d6b5195a5cfed6cd9fed0fe774e226d8f854fcb23b7bbef0350233"},
-    {file = "rsa-4.6.tar.gz", hash = "sha256:109ea5a66744dd859bf16fe904b8d8b627adafb9408753161e766a92e7d681fa"},
+    {file = "rsa-4.7-py3-none-any.whl", hash = "sha256:a8774e55b59fd9fc893b0d05e9bfc6f47081f46ff5b46f39ccf24631b7be356b"},
+    {file = "rsa-4.7.tar.gz", hash = "sha256:69805d6b69f56eb05b62daea3a7dbd7aa44324ad1306445e05da8060232d00f4"},
 ]
 scipy = [
     {file = "scipy-1.5.4-cp36-cp36m-macosx_10_9_x86_64.whl", hash = "sha256:4f12d13ffbc16e988fa40809cbbd7a8b45bc05ff6ea0ba8e3e41f6f4db3a9e47"},
@@ -3114,8 +2953,8 @@ tensorflow = [
     {file = "tensorflow-2.4.0-cp38-cp38-win_amd64.whl", hash = "sha256:7adcf41f57fdb12cd6792df02fb3cd16bddbe449cd7140faaa2bf2b3d5b5c4df"},
 ]
 tensorflow-datasets = [
-    {file = "tensorflow-datasets-4.1.0.tar.gz", hash = "sha256:fb3ceaa98cbffdcc47c931841396954eaf06bf6f82e662083123d723fe20ab20"},
-    {file = "tensorflow_datasets-4.1.0-py3-none-any.whl", hash = "sha256:be164c218289e66efcb44abba6605e73b9f896b7760519ee021de7fb3666384a"},
+    {file = "tensorflow-datasets-4.2.0.tar.gz", hash = "sha256:93a89cd599b24e9cb04a3a3b43cc72728fc11889f41e9d69f0bd95a8318531bc"},
+    {file = "tensorflow_datasets-4.2.0-py3-none-any.whl", hash = "sha256:be2532e7de3c7aac3e95a094c3c95b9b1f1a7f2e98daeb16d212dda4382de264"},
 ]
 tensorflow-estimator = [
     {file = "tensorflow_estimator-2.4.0-py2.py3-none-any.whl", hash = "sha256:5b7b7bf2debe19a8794adacc43e8ba6459daa4efaf54d3302623994a359b17f0"},
@@ -3127,8 +2966,8 @@ termcolor = [
     {file = "termcolor-1.1.0.tar.gz", hash = "sha256:1d6d69ce66211143803fbc56652b41d73b4a400a2891d7bf7a1cdf4c02de613b"},
 ]
 terminado = [
-    {file = "terminado-0.9.1-py3-none-any.whl", hash = "sha256:c55f025beb06c2e2669f7ba5a04f47bb3304c30c05842d4981d8f0fc9ab3b4e3"},
-    {file = "terminado-0.9.1.tar.gz", hash = "sha256:3da72a155b807b01c9e8a5babd214e052a0a45a975751da3521a1c3381ce6d76"},
+    {file = "terminado-0.9.2-py3-none-any.whl", hash = "sha256:23a053e06b22711269563c8bb96b36a036a86be8b5353e85e804f89b84aaa23f"},
+    {file = "terminado-0.9.2.tar.gz", hash = "sha256:89e6d94b19e4bc9dce0ffd908dfaf55cc78a9bf735934e915a4a96f65ac9704c"},
 ]
 testpath = [
     {file = "testpath-0.4.4-py2.py3-none-any.whl", hash = "sha256:bfcf9411ef4bf3db7579063e0546938b1edda3d69f4e1fb8756991f5951f85d4"},
@@ -3186,8 +3025,8 @@ tornado = [
     {file = "tornado-6.1.tar.gz", hash = "sha256:33c6e81d7bd55b468d2e793517c909b139960b6c790a60b7991b9b6b76fb9791"},
 ]
 tqdm = [
-    {file = "tqdm-4.55.1-py2.py3-none-any.whl", hash = "sha256:b8b46036fd00176d0870307123ef06bb851096964fa7fc578d789f90ce82c3e4"},
-    {file = "tqdm-4.55.1.tar.gz", hash = "sha256:556c55b081bd9aa746d34125d024b73f0e2a0e62d5927ff0e400e20ee0a03b9a"},
+    {file = "tqdm-4.56.0-py2.py3-none-any.whl", hash = "sha256:4621f6823bab46a9cc33d48105753ccbea671b68bab2c50a9f0be23d4065cb5a"},
+    {file = "tqdm-4.56.0.tar.gz", hash = "sha256:fe3d08dd00a526850568d542ff9de9bbc2a09a791da3c334f3213d8d0bbbca65"},
 ]
 traitlets = [
     {file = "traitlets-4.3.3-py2.py3-none-any.whl", hash = "sha256:70b4c6a1d9019d7b4f6846832288f86998aa3b9207c6821f3578a6a6a467fe44"},
@@ -3245,10 +3084,6 @@ webencodings = [
 werkzeug = [
     {file = "Werkzeug-1.0.1-py2.py3-none-any.whl", hash = "sha256:2de2a5db0baeae7b2d2664949077c2ac63fbd16d98da0ff71837f7d1dea3fd43"},
     {file = "Werkzeug-1.0.1.tar.gz", hash = "sha256:6c80b1e5ad3665290ea39320b91e1be1e0d5f60652b964a3070216de83d2e47c"},
-]
-widgetsnbextension = [
-    {file = "widgetsnbextension-3.5.1-py2.py3-none-any.whl", hash = "sha256:bd314f8ceb488571a5ffea6cc5b9fc6cba0adaf88a9d2386b93a489751938bcd"},
-    {file = "widgetsnbextension-3.5.1.tar.gz", hash = "sha256:079f87d87270bce047512400efd70238820751a11d2d8cb137a5a5bdbaf255c7"},
 ]
 wmctrl = [
     {file = "wmctrl-0.3.tar.gz", hash = "sha256:d806f65ac1554366b6e31d29d7be2e8893996c0acbb2824bbf2b1f49cf628a13"},

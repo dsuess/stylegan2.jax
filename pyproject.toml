@@ -24,9 +24,10 @@ pylint = "^2.6"
 mypy = "^0.782"
 pytest = "^6.0.0"
 isort = "^5.0"
-jupyter = "^1.0.0"
 notebook = "^6.1.5"
 pdbpp = "^0.10.2"
+numpy = "<1.19.5"
+jedi = "<0.18.0"
 
 [tool.poetry.extras]
 cpu = ["jaxlib"]
