@@ -32,7 +32,7 @@ class SkipGenerator(hk.Module):
         name (str, optional): Name of Haiku module. Defaults to None.
 
     >>> module = _init(SkipGenerator, image_size=64, max_hidden_feature_size=16)
-    >>> latents = jnp.zeros((1, 10, 512))
+    >>> latents = jnp.zeros((1, 5, 512))
     >>> key = jax.random.PRNGKey(0)
     >>> params = module.init(key, latents)
     >>> y = module.apply(params, key, latents)
@@ -71,33 +71,31 @@ class SkipGenerator(hk.Module):
         self.data_format = data_format
         self.resample_kernel = jnp.array([1, 3, 3, 1])
 
-    def get_initial_features(self, key) -> jnp.ndarray:
+    def get_initial_features(self) -> jnp.ndarray:
         """
         >>> key = jax.random.PRNGKey(0)
         >>> func = hk.transform(lambda: SkipGenerator(
         ...     image_size=(64, 128),
-        ...     max_hidden_feature_size=16).get_initial_features(key))
+        ...     max_hidden_feature_size=16).get_initial_features())
         >>> params = func.init(key)
         >>> x = func.apply(params, key)
         >>> tuple(x.shape)
-        (4, 8, 16)
+        (1, 4, 8, 16)
         """
         # setup the initial 4x4 block
         const_size = tuple(x // 2 ** (len(self.num_features) - 1) for x in self.size_t)
         num_features = self.num_features[-1]
         if self.data_format == ChannelOrder.channels_first:
-            shape = (num_features, *const_size)
+            shape = (1, num_features, *const_size)
         else:
-            shape = (*const_size, num_features)
-
-        return jax.random.normal(key, shape)
+            shape = (1, *const_size, num_features)
+        return hk.get_parameter("init", shape, init=hk.initializers.RandomNormal())
 
     def layer(
         self,
         x: jnp.ndarray,
         latents: jnp.ndarray,
         output_channels: int,
-        key: jax.random.PRNGKey,
         upsample: bool = False,
     ) -> jnp.ndarray:
         if upsample:
@@ -118,6 +116,7 @@ class SkipGenerator(hk.Module):
         else:
             noise_shape = (y.shape[0], y.shape[1], y.shape[2], 1)
 
+        key = hk.next_rng_key()
         noise = jax.random.normal(key, shape=noise_shape, dtype=y.dtype)
         noise_strength = hk.get_parameter(
             "noise_strength", (1, 1, 1, 1), dtype=y.dtype, init=jnp.zeros
@@ -141,31 +140,22 @@ class SkipGenerator(hk.Module):
             y = y + rgb
         return y
 
+    def block(self, y, latents, num_features):
+        y = self.layer(y, latents, output_channels=num_features, upsample=True)
+        y = self.layer(y, latents, output_channels=num_features)
+        return y
+
     def __call__(self, latents: jnp.ndarray) -> jnp.ndarray:
-        key = hk.next_rng_key()
-        const = self.get_initial_features(key)
-        # TODO Express using vmap
-        const = jnp.tile(const[None], reps=(latents.shape[0], 1, 1, 1))
+        const = self.get_initial_features()
+        const = jnp.tile(const, reps=(latents.shape[0], 1, 1, 1))
         # 1st axis ... which block latent is used in
         # 2nd axis ... whether latent is used in layer or in ToRGB
-        latents = jnp.reshape(
-            latents, (latents.shape[0], 2, len(self.num_features), latents.shape[2])
-        )
-        y = self.layer(
-            const, latents[:, 0, 0], output_channels=self.num_features[-1], key=key
-        )
-        rgb = self.to_rgb(y, latents[:, 0, 1])
+        y = self.layer(const, latents[:, 0], output_channels=self.num_features[-1])
+        rgb = self.to_rgb(y, latents[:, 0])
 
         for layer_idx, num_features in list(enumerate(self.num_features))[1:]:
-            conv_up = UpsampleConv2D(
-                num_features,
-                kernel_shape=3,
-                upsample_factor=2,
-                resample_kernel=self.resample_kernel,
-            )
-            y = conv_up(y, latents[:, layer_idx - 1, 1])
-            conv = ModulatedConv2D(num_features, kernel_shape=3)
-            y = conv(y, latents[:, layer_idx, 0])
-            rgb = self.to_rgb(y, latents[:, layer_idx, 1], rgb=rgb)
+            # block
+            y = self.block(y, latents[:, layer_idx], num_features)
+            rgb = self.to_rgb(y, latents[:, layer_idx], rgb)
 
         return rgb
